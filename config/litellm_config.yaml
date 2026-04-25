@@ -1,0 +1,78 @@
+model_list:
+  # Fast classifiers
+  - model_name: classifier-groq
+    litellm_params:
+      model: groq/llama-3.3-70b-versatile
+      api_key: ${GROQ_API_KEY}
+
+  - model_name: classifier-gemini
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: ${GEMINI_API_KEY}
+
+  # Medium executors
+  - model_name: executor-cerebras
+    litellm_params:
+      model: cerebras/qwen-3-235b-a22b-instruct-2507
+      api_key: ${CEREBRAS_API_KEY}
+
+  - model_name: executor-sambanova
+    litellm_params:
+      model: sambanova/Llama-3.1-405B-Instruct
+      api_key: ${SAMBANOVA_API_KEY}
+
+  # NVIDIA NIM (OpenAI-compatible, powerful executor)
+  - model_name: executor-nvidia-70b
+    litellm_params:
+      model: openai/llama-3.1-nemotron-70b-instruct
+      api_base: https://integrate.api.nvidia.com/v1
+      api_key: ${NVIDIA_API_KEY}
+
+  - model_name: executor-nvidia-340b
+    litellm_params:
+      model: openai/nemotron-4-340b-instruct
+      api_base: https://integrate.api.nvidia.com/v1
+      api_key: ${NVIDIA_API_KEY}
+
+  # OpenRouter multimodal access
+  - model_name: executor-openrouter
+    litellm_params:
+      model: openrouter/openai/gpt-oss-120b:free
+      api_base: https://openrouter.ai/api/v1
+      api_key: ${OPENROUTER_API_KEY}
+
+  # Fallback for any model request
+  - model_name: "*"
+    litellm_params:
+      model: groq/llama-3.3-70b-versatile
+      api_key: ${GROQ_API_KEY}
+
+litellm_settings:
+  drop_params: true
+  modify_params: true
+  num_retries: 1
+  request_timeout: 60
+  
+  # Intelligent fallback chain
+  fallbacks:
+    - classifier-groq:
+        - classifier-gemini
+    - executor-cerebras:
+        - executor-nvidia-70b
+        - executor-sambanova
+        - executor-openrouter
+    - executor-nvidia-70b:
+        - executor-cerebras
+        - executor-nvidia-340b
+        - executor-openrouter
+    - executor-sambanova:
+        - executor-nvidia-70b
+        - executor-cerebras
+        - executor-openrouter
+
+  # Log all requests for monitoring
+  log_file_path: /home/talasemico/litellm/requests.log
+
+general_settings:
+  streaming_chunk_builder_timeout: 120
+  enable_metadata_logging: true

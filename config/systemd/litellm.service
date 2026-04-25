@@ -1,0 +1,17 @@
+[Unit]
+Description=LiteLLM Proxy
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/talasemico/.local/bin/litellm --config /home/talasemico/litellm/litellm_config.yaml --port 4000
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:/home/talasemico/litellm/litellm.log
+StandardError=append:/home/talasemico/litellm/litellm.log
+
+# Load env vars for free APIs
+EnvironmentFile=-/home/talasemico/.bashrc
+
+[Install]
+WantedBy=default.target
