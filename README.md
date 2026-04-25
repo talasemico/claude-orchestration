@@ -294,6 +294,78 @@ Edit `~/.claude/settings.json`:
 }
 ```
 
+## pi.dev Setup (Alternative to Claude Code)
+
+Want to use **pi.dev** instead of Claude Code? The same orchestration infrastructure works with pi.dev!
+
+### Installation
+
+Pi.dev requires Node.js >=20.0.0. After upgrading Node:
+
+```bash
+./install-pi.sh
+```
+
+Or manually:
+
+```bash
+npm install -g @mariozechner/pi-coding-agent
+mkdir -p ~/.pi/skills
+cp pi-setup/config/config.yaml ~/.pi/config.yaml
+cp pi-setup/skills/*.md ~/.pi/skills/
+cp pi-setup/pi_wrapper.sh ~/orchestrator/
+```
+
+### Usage
+
+```bash
+# Single-shot prompts (with prompt engineering)
+pi "analyze the project structure"
+pi "run tests and fix errors"
+
+# With specific agent/skill
+pi --skill scout "show directory tree"
+pi --skill planner "design the architecture"
+
+# Interactive mode (no prompt engineering in TUI)
+pi
+```
+
+### How It Works
+
+- **Same LiteLLM proxy** — Pi connects to `localhost:4000` as an OpenAI-compatible endpoint
+- **Same models** — All 7 free APIs available: Cerebras, NVIDIA, Groq, SambaNova, OpenRouter, Gemini
+- **Prompt engineering** — The `pi` alias wrapper pipes prompts through Groq Llama 70B before execution
+- **Same agents/skills** — The 5 specialized agents (scout, researcher, builder, planner, documenter) ported to Pi format
+- **Token tracking** — Usage logs visible in `~/.pi/sessions/` and can be monitored with `token_monitor.py`
+
+### pi.dev vs. Claude Code
+
+| Feature | Claude Code | Pi.dev |
+|---------|-----|----|
+| **Setup** | Easy (built-in agent system) | Medium (Node 20+ required) |
+| **Model flexibility** | Limited to configured Claude models | 15+ providers natively |
+| **Prompt engineering** | Via hook system | Via wrapper script |
+| **Session history** | Linear | Tree-based (branching) |
+| **Cost** | $0 (free models only) | $0 (free models only) |
+| **Primary interface** | GUI/Web | Terminal |
+
+### Known Limitations
+
+- **Interactive TUI mode** doesn't get prompt engineering (wrapper only works for command-line args)
+- **Tool restrictions** are less granular in Pi than Claude Code's per-tool patterns
+- **Requires Node.js 20+** (system in this example has 18, upgrade needed to run)
+
+### Migration Guide
+
+When fully switching from Claude Code to pi.dev:
+
+1. Keep LiteLLM running (serves both tools)
+2. Set `~/.bashrc` default to `pi` sessions instead of `claude` sessions
+3. Use pi's session branching feature to organize work
+
+---
+
 ## Troubleshooting
 
 ### LiteLLM not starting

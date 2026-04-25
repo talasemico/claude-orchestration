@@ -1,0 +1,25 @@
+provider: openai
+apiUrl: http://localhost:4000/v1
+apiKey: test
+model: executor-cerebras
+
+# Pi configuration for cost-optimized multi-model routing
+# Uses LiteLLM proxy on localhost:4000 to access 7+ free LLM APIs
+# with intelligent fallback chains and task-specific model selection
+
+# Default model: executor-cerebras (free tier)
+# Available models in LiteLLM:
+#   - classifier-groq: Groq Llama 3.3 70B (fast, cheap)
+#   - executor-cerebras: Cerebras Qwen 3 235B (free, capable)
+#   - executor-nvidia-70b: NVIDIA Nemotron 70B (free)
+#   - executor-nvidia-340b: NVIDIA Nemotron 340B (free, powerful)
+#   - executor-sambanova: SambaNova Llama 405B (free)
+#   - executor-openrouter: OpenRouter GPT-OSS 120B (free)
+#   - executor-gemini: Google Gemini 2.5 Flash (free, backup)
+
+# Per-skill model override:
+# Use "model: executor-nvidia-340b" in skill frontmatter to use a specific model
+
+# Prompt engineering:
+# The 'pi' alias wrapper pipes prompts through ~/orchestrator/prompt_engineer.py
+# which uses Groq Llama 70B to rewrite prompts for clarity before execution
